@@ -18,6 +18,20 @@ from .map_view import _load_atlas, _rings_by_country, ATLAS_PATH
 
 _FICTIONAL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "fictional_islands.json")
 _FICTIONAL_CACHE = None
+_CAPITALS_CACHE = None
+
+
+def capital_for_country(name: str) -> str:
+    """Return the designated capital or seat for every playable country/territory."""
+    global _CAPITALS_CACHE
+    if _CAPITALS_CACHE is None:
+        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "country_capitals.json")
+        try:
+            with open(path, encoding="utf-8") as f:
+                _CAPITALS_CACHE = json.load(f)
+        except Exception:
+            _CAPITALS_CACHE = {}
+    return _CAPITALS_CACHE.get(name, f"شهر مرکزی {name}")
 
 def _fictional_centers():
     global _FICTIONAL_CACHE
@@ -182,7 +196,7 @@ def generate_divisions(name: str, polygons, count: int = 6):
     state = [_stable_seed("div:" + name)]
     out = []
     # پایتخت نزدیک مرکز
-    out.append({"name": f"پایتخت {name}", "kind": "capital",
+    out.append({"name": capital_for_country(name), "kind": "capital",
                 "lat": round(center[0] + (_rand(state) - 0.5) * 0.4, 4),
                 "lon": round(_norm_lon(center[1] + (_rand(state) - 0.5) * 0.4), 4)})
     n_prov = max(3, min(5, count - 1))

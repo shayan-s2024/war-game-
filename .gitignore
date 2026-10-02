@@ -13,6 +13,8 @@ __pycache__/
 # Frontend dependencies/build output
 node_modules/
 dist/
+*.tsbuildinfo
+/work/
 
 # Local databases, logs, uploads
 *.sqlite3

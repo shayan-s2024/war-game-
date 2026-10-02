@@ -863,12 +863,16 @@ def _my_country_stats(player) -> dict:
 
 
 def _serialize_profile(prof, country) -> dict:
-    """ðŸŽ¨ Ù¾Ø±ÙˆÙØ§ÛŒÙ„ Ø´Ø®ØµÛŒâ€ŒØ³Ø§Ø²ÛŒ â€” Ø¨Ø§ fallback Ø¨Ù‡ Ù…Ù‚Ø¯Ø§Ø± Ù¾ÛŒØ´â€ŒÙØ±Ø¶ Ú©Ø´ÙˆØ±."""
+    """Return a country profile, using the game's designated capital as its default."""
+    default_capital = country_geo.capital_for_country(country.name)
+    capital_name = prof.capital_name
+    if not capital_name or capital_name == f"\u067e\u0627\u06cc\u062a\u062e\u062a {country.name}":
+        capital_name = default_capital
     return {
         "display_name": prof.display_name or country.name,
         "flag_emoji": prof.flag_emoji or country.emoji,
         "map_color": prof.map_color or ("#e8654f" if prof.imaginary else "#38bdf8"),
-        "capital_name": prof.capital_name or (f"\u067e\u0627\u06cc\u062a\u062e\u062a {country.name}"),
+        "capital_name": capital_name,
         "government": prof.government or "\u062c\u0645\u0647\u0648\u0631\u06cc",
         "imaginary": prof.imaginary,
         "divisions": prof.divisions or [],
@@ -894,6 +898,11 @@ def my_map(request):
                 c.name, c.lat, c.lon, c.continent.lat, c.continent.lon)
             divs = (prof.divisions if prof and prof.divisions else
                     country_geo.generate_divisions(c.name, geo["polygons"], count=6))
+            if prof:
+                default_capital = country_geo.capital_for_country(c.name)
+                for division in divs:
+                    if division.get("kind") == "capital" and division.get("name") == f"\u067e\u0627\u06cc\u062a\u062e\u062a {c.name}":
+                        division["name"] = default_capital
             territory.append({
                 "name": c.name, "emoji": c.emoji,
                 "lat": c.lat, "lon": c.lon,
