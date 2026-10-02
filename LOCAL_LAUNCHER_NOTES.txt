@@ -1,0 +1,6 @@
+WW3 local launcher notes
+
+- run_frontend.bat uses SQLite for local development.
+- PostgreSQL driver psycopg2-binary is intentionally not installed locally.
+- Python 3.14 is supported by the local Pillow 12.0.0 dependency.
+- If you already have a partially-created backend\venv from a failed install, rerun run_frontend.bat; pip will repair/install the missing packages.

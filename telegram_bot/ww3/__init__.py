@@ -1,0 +1,31 @@
+"""پکیج بازی جنگ جهانی — نسخه ماژولار"""
+
+from . import config, static_data, database, state, helpers
+from . import registration, cabinet, dashboard, shop, payments, bases, attack, hacks, unions, economy, admin, guide, dispatcher
+
+# اتصال نام‌های بین‌ماژولی (late binding) — توابع در زمان فراخوانی resolve می‌شوند
+_CROSS = {
+    'cabinet': ['send_dashboard', 'start_name_input'],
+    'dashboard': ['send_cabinet_question'],
+    'shop': ['send_dashboard'],
+    'payments': ['is_registered_player'],
+    'attack': ['send_dashboard'],
+    'hacks': ['reduce_user_weapon', 'send_dashboard'],
+    'admin': ['is_registration_closed', 'set_registration_closed'],
+    'dispatcher': ['admin_add_admin', 'admin_add_credit', 'admin_assign_random_country_to_players', 'admin_attack_stats', 'admin_broadcast', 'admin_change_all_codes', 'admin_change_player_codes', 'admin_check_country_status', 'admin_close_registration', 'admin_complete_players_report', 'admin_delete_all_economy_players', 'admin_delete_all_incomplete_players', 'admin_delete_incomplete_player', 'admin_delete_player_menu', 'admin_edit_attack', 'admin_edit_country', 'admin_edit_defense', 'admin_edit_name', 'admin_edit_population', 'admin_edit_score', 'admin_end_war', 'admin_find_incomplete_players', 'admin_find_players_without_country', 'admin_find_players_without_economy', 'admin_fix_duplicate_countries', 'admin_fix_union_manual', 'admin_fix_union_menu', 'admin_give_item', 'admin_give_item_menu', 'admin_give_virus', 'admin_global_reward_amount', 'admin_global_reward_menu', 'admin_list_all_countries', 'admin_manage_admins', 'admin_manage_players', 'admin_open_registration', 'admin_registration_status', 'admin_remove_admin', 'admin_remove_credit', 'admin_search_delete_player', 'admin_send_smart_warning', 'admin_send_warning_to_all_incomplete', 'admin_set_war_time', 'admin_show_duplicate_countries', 'admin_show_players_with_country_no_cabinet', 'admin_start_war', 'allow_base_construction', 'apply_virus_damage', 'approve_join_request', 'approve_payment', 'artillery_targets_menu', 'ask_artillery_count', 'ask_attack_count', 'ask_bomb_count', 'ask_for_buy_count', 'attack_air', 'attack_artillery_menu', 'attack_assassination_menu', 'attack_bombs_menu', 'attack_drone', 'attack_ground', 'attack_hacker_from_search', 'attack_hacker_menu', 'attack_helicopter', 'attack_missile', 'attack_navy', 'attack_search_target', 'attack_select_from_search', 'attack_submarine', 'attack_weapon_select', 'bomb_targets_menu', 'build_base_in_country', 'buy_building', 'check_and_add_daily_profit', 'check_expired_requests', 'clean_old_payment_requests', 'clear_all_bases', 'complete_player_info', 'debug_bases', 'deny_base_construction', 'execute_assassination', 'execute_hack_defense', 'fix_user_union', 'get_admin_stats', 'handle_check_join', 'handle_guide', 'is_registered_player', 'is_registration_available', 'load_game_config', 'process_add_credit', 'process_assassination_code', 'process_attack', 'process_attack_search', 'process_attack_text_input', 'process_build_base_continent', 'process_buy_item', 'process_cabinet_answer', 'process_country_selection', 'process_delete_all_economy_callback', 'process_delete_all_economy_confirm', 'process_delete_confirm', 'process_delete_economy_confirm', 'process_donation_item', 'process_edit_attack', 'process_edit_country', 'process_edit_defense', 'process_edit_name', 'process_edit_population', 'process_edit_score', 'process_fix_union_by_id', 'process_give_item', 'process_give_virus', 'process_global_reward', 'process_hack_attack', 'process_hack_from_search', 'process_hack_target_selection', 'process_incomplete_delete_callback', 'process_manual_cabinet_input', 'process_name_input', 'process_payment_screenshot', 'process_referral', 'process_remove_credit', 'process_un_sanction', 'process_un_search_country', 'process_union_create', 'process_union_deposit', 'process_union_search', 'process_union_withdraw', 'purge_junk_players', 'reject_join_request', 'reject_payment', 'select_assassination_member', 'select_hack_target', 'select_sanction_type', 'send_admin_home', 'send_admin_panel', 'send_alliance_panel', 'send_attack_menu', 'send_bases_menu', 'send_broadcast_to_all', 'send_build_base_menu', 'send_cabinet_question', 'send_countries_of_continent', 'send_country_selection_menu', 'send_dashboard', 'send_invite_message', 'send_join_request', 'send_join_required', 'send_my_equipment', 'send_shop_artillery', 'send_shop_bomb', 'send_shop_building', 'send_shop_carrier', 'send_shop_defense', 'send_shop_drone', 'send_shop_economic', 'send_shop_fighter', 'send_shop_ground', 'send_shop_hacker', 'send_shop_helicopter', 'send_shop_menu', 'send_shop_missile', 'send_shop_naval_vehicles', 'send_shop_navy', 'send_shop_offensive', 'send_shop_pilot', 'send_shop_submarine', 'send_shop_tank', 'send_shop_toman', 'send_start_button', 'send_start_button_closed', 'send_statement_menu', 'send_statement_to_group', 'send_tweet_to_group', 'send_un_panel', 'show_battle_log', 'show_battle_rules', 'show_delete_confirmation', 'show_my_info', 'show_player_edit_menu', 'show_union_kick_menu', 'show_union_members', 'show_union_requests', 'spread_random_virus', 'start_manual_cabinet_input', 'start_name_input', 'toman_purchase_callback', 'un_full_player_list', 'un_full_player_list_page', 'un_search_country', 'un_select_sanction_from_search', 'union_create', 'union_delete', 'union_deposit', 'union_donate_credit', 'union_donate_item', 'union_donate_menu', 'union_donate_select_target', 'union_kick_member', 'union_leave', 'union_list', 'union_power', 'union_production', 'union_search', 'union_treasury_menu', 'union_upgrade', 'union_wealth', 'union_withdraw'],
+    'registration': ['send_admin_home', 'send_cabinet_question', 'send_dashboard'],
+}
+
+for _mod_name, _names in _CROSS.items():
+    _mod = globals()[_mod_name]
+    for _n in _names:
+        _owner = None
+        for _cand in (registration, cabinet, dashboard, shop, payments, bases, attack, hacks, unions, economy, admin, guide, dispatcher):
+            if _n in vars(_cand):
+                _owner = _cand
+                break
+        assert _owner is not None, f'cross name {_n} not found'
+        setattr(_mod, _n, getattr(_owner, _n))
+
+main = dispatcher.main
+
